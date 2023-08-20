@@ -12,20 +12,26 @@ struct CardView: View {
     
     @State private var currentImage = 1
     @State private var randomNumber = 1
-    
+    @State private var isShowingSheet = false
     
     // MARK: - FUNCTIONS
     
     func randomImage() {
-        randomNumber = Int.random(in: 1...5)
-        if(randomNumber == currentImage) {
-            randomNumber = Int.random(in: 1...5)
-            currentImage = randomNumber
-        }else {
-            currentImage = randomNumber
-        }
+        print("--- BUTTON WAS PRESSD ---")
+        print("Status: Old Image Number = \(currentImage)")
+        repeat {
         
+            randomNumber = Int.random(in: 1...5)
+            print("Action: Random Number Generated = \(randomNumber)")
+        }while randomNumber == currentImage
+        
+        currentImage = randomNumber
+        
+        print("Resul: New Image number = \(currentImage)")
+        print("--- THE END ---")
+        print("\n")
     }
+    
     
     var body: some View {
         // MARK: - CARD
@@ -36,26 +42,45 @@ struct CardView: View {
             VStack{
                 // MARK: - HEADER
                 
-                HeaderCardView()
+                VStack(alignment: .leading){
+                    HStack {
+                        Text("Hiking")
+                            .font(.system(size: 52))
+                            .fontWeight(.black)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.customGrayLight, .customGrayMedium],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                        Spacer()
+                        Button{
+                            isShowingSheet.toggle()
+                        } label: {
+                            CustomButtonView()
+                        }
+                        .sheet(isPresented: $isShowingSheet) {
+                            SettingsView()
+                                .presentationDragIndicator(.visible)
+                                .presentationDetents([.medium, .large])
+                        }
+                        
+                            
+                    }
+                    Text("Fun and enjoyable outdoor activity for friends and families.")
+                        .multilineTextAlignment(.leading)
+                        .italic()
+                        .foregroundColor(.customGrayMedium)
+                }.padding(.horizontal, 30)
                 
                 // MARK: - MAIN CONTENT
                 ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.customIndigoMedium,
-                                    Color.customSalmonLight
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 256, height: 256)
-                        
+                    CustomCircleView()
                     Image("image-\(currentImage)")
                         .resizable()
                         .scaledToFit()
+                        .animation(.default, value: currentImage)
                 }
                 
                 // MARK: - FOOTER
